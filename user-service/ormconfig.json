@@ -1,0 +1,13 @@
+{
+  "type": "mongodb",
+  "host": "localhost",
+  "port": 27017,
+  "username": "",
+  "password": "",
+  "database": "moneybot",
+  "entities": [
+    "dist/**/*.entity{.ts,.js}"
+  ],
+  "synchronize": true,
+  "autoLoadEntities": true
+}
