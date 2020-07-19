@@ -1,3 +1,7 @@
+import { UserService } from './src/user/user.service';
+import { User } from './src/user/user.entity';
+import { Repository } from 'typeorm';
+
 async function generatePolicy(effect: string, resource: string, context:Record<string, string> = {}): Promise<Record<string, any>> {
   const authResponse: Record<string, any> = {};
   authResponse.principalId = "user";
@@ -24,6 +28,15 @@ export async function authorizerHandler(event: Record<string, any>): Promise<Rec
     return await generatePolicy("Deny", event.methodArn, {})
   }
 
-  // TODO: Need to get roles from user-service using the token
-  return await generatePolicy("Allow", event.methodArn, {})
+  const userService = new UserService(new Repository<User>())
+  const email: string = await UserService.getEmailFromToken(token)
+  const user: User = await userService.getUserFromEmail(email)
+  if (!user) {
+    return await generatePolicy("Deny", event.methodArn, {})
+  }
+
+  return await generatePolicy("Allow", event.methodArn, {
+    "roles": "",
+    "email": email
+  })
 }
